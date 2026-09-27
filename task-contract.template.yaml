@@ -30,6 +30,11 @@ budget:
   max_children: 3
   max_tool_calls: 30
   deadline: null
+measurement:
+  benchmark_family: null # terminal | swe | automation | research | local_ab
+  capture_tokens: true # use unknown when the plan/runtime does not expose them
+  capture_elapsed_time: true
+  independent_verifier: required
 acceptance:
   checks: [storyboard_approved, render_check, caption_check]
   owner: content_owner
