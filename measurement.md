@@ -4,13 +4,18 @@ Load only for route evaluation or subscription portfolio decisions.
 
 ## Minimum ledger
 
-    parent_task_id, capability, artifact, route/model tier, skill version, data class,
-    start/end, queue/rate-limit idle, context/cache state, capacity before/after,
-    input/cache-hit/reasoning/output/tool tokens when exposed, direct cost,
-    human minutes, retry/escalation count, acceptance, defect escape,
-    owner/reviewer
+    parent_task_id, capability, artifact, benchmark_family, route/model/access/effort,
+    skill_version, data_class, mode(quality_budget|quality_deadline|batch_verified),
+    quality_floor, cash_cap, deadline, start/end, queue/rate-limit idle,
+    generation/tool/review/human seconds, context/cache state, capacity before/after,
+    input/cache-hit/cache-write/reasoning/output/tool tokens when exposed,
+    api/overage/rental/local/tool/review cash, human minutes, retry/escalation count,
+    acceptance, defect escape, owner/reviewer
 
-Attach every child attempt to the original accepted parent deliverable. Measure effective cost per accepted parent task, time to accepted, quality/defect outcome, and accepted tasks per wall-clock interval.
+Attach every child attempt to the original accepted parent deliverable. Derive
+`Q=accepted/attempted`, `C=all-cash/accepted-parent-task`, and
+`T=queue+generation+tool+review+human-correction`. Keep unknown token/plan fields
+null; never substitute list price or a made-up token equivalent.
 
 ## A/B tests
 

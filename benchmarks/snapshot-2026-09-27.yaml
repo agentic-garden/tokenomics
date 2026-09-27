@@ -1,0 +1,31 @@
+schema: tokenomics.benchmark-snapshot/v1
+captured_at: 2026-09-27
+rules: {comparison_key: [benchmark, version, harness, effort, task_family], null_means: not_published_or_not_measured, steps_are_latency: false}
+deep_swe_v1_1:
+  source: https://deepswe.datacurve.ai/blog/deepswe-v1-1
+  task_family: verified_repository_change
+  time_note: Wall-clock time is deliberately not reported by DeepSWE.
+  rows:
+    - {model: GPT-6 Astra, effort: Xhigh, q_pass_pct: 74, c_usd_per_task: 4.43, output_tokens: 30000, steps: 29, elapsed_s: null}
+    - {model: Gemini 3.8 Flash, effort: High, q_pass_pct: 74, c_usd_per_task: 2.36, output_tokens: 143000, steps: 166, elapsed_s: null}
+    - {model: Claude Opus 5, effort: Max, q_pass_pct: 74, c_usd_per_task: 11.84, output_tokens: 118000, steps: 99, elapsed_s: null}
+    - {model: GPT-5.6 Sol, effort: Max, q_pass_pct: 73, c_usd_per_task: 6.46, output_tokens: 60000, steps: 61, elapsed_s: null}
+    - {model: GLM-5.3, effort: Max, q_pass_pct: 69, c_usd_per_task: 3.99, output_tokens: 80000, steps: 124, elapsed_s: null}
+    - {model: Kimi K3, effort: Max, q_pass_pct: 69, c_usd_per_task: 4.65, output_tokens: 81000, steps: 98, elapsed_s: null}
+    - {model: GPT-5.6 Luna, effort: Max, q_pass_pct: 67, c_usd_per_task: 0.61, output_tokens: 73000, steps: 102, elapsed_s: null}
+    - {model: DeepSeek V4 Pro, effort: Max, q_pass_pct: 63, c_usd_per_task: 1.67, output_tokens: 106000, steps: 155, elapsed_s: null}
+    - {model: GLM-5.3 Flash, effort: Max, q_pass_pct: 63, c_usd_per_task: 0.24, output_tokens: 73000, steps: 123, elapsed_s: null}
+    - {model: DeepSeek V4.1 Flash, effort: Max, q_pass_pct: 53, c_usd_per_task: 0.46, output_tokens: 108000, steps: 153, elapsed_s: null}
+    - {model: Claude Sonnet 5, effort: Max, q_pass_pct: 54, c_usd_per_task: 26.40, output_tokens: 214000, steps: 268, elapsed_s: null}
+other_families:
+  - {benchmark: Terminal-Bench, version: '4.0', model: GPT-6 Astra, effort: Xhigh, q_metric: pass_at_1_pct, q_value: 59.6, c_usd_per_task: null, weighted_decode_s: null}
+  - {benchmark: Terminal-Bench, version: '4.0', model: Claude Opus 5.5, effort: Max/Xhigh, q_metric: pass_at_1_pct, q_value: 59.6, c_usd_per_task: null, weighted_decode_s: null}
+  - {benchmark: AutomationBench-AA, model: Claude Opus 5.5, effort: Max, q_metric: objective_safe_score_pct, q_value: 69.5, objectives_pct: 90, c_usd_per_task: null, elapsed_s: null}
+  - {benchmark: AutomationBench-AA, model: DeepSeek V4.1 Flash, effort: Max, q_metric: objective_safe_score_pct, q_value: 68.9, c_usd_per_task: null, elapsed_s: null}
+  - {benchmark: AutomationBench-AA, model: GPT-6 Astra, effort: Max, q_metric: objective_safe_score_pct, q_value: 68.5, objectives_pct: 89, c_usd_per_task: null, elapsed_s: null}
+  - {benchmark: APEX Agents, model: Claude Opus 5.5, effort: Max, q_metric: mean_score_pct, q_value: 73.5, uncertainty_pct: 4.9, c_usd_per_task: null, elapsed_s: null}
+  - {benchmark: APEX Agents, model: Claude Fable 5.1, effort: Max, q_metric: mean_score_pct, q_value: 68.6, uncertainty_pct: 4.9, c_usd_per_task: null, elapsed_s: null}
+  - {benchmark: APEX Agents, model: Gemini 3.7 Flash, effort: High, q_metric: mean_score_pct, q_value: 67.8, uncertainty_pct: 5.1, c_usd_per_task: null, elapsed_s: null}
+  - {benchmark: AA-Omniscience, model: Claude Opus 5.5, effort: Max, q_metric: calibration_index, q_value: 46, c_usd_per_task: null, elapsed_s: null}
+  - {benchmark: AA-Omniscience, model: GPT-6 Astra, effort: High, q_metric: calibration_index, q_value: 44, c_usd_per_task: null, elapsed_s: null}
+  - {benchmark: AA-Omniscience, model: Claude Fable 5.1, effort: Max, q_metric: calibration_index, q_value: 43, c_usd_per_task: null, elapsed_s: null}

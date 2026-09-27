@@ -4,9 +4,12 @@ Load only for purchases, renewals, overage/API/local/rental comparisons, or a ta
 
 ## Cost model
 
+    api_cost = (input*input_rate + cache_hit*cache_hit_rate + cache_write*cache_write_rate
+                + reasoning*reasoning_rate + output*output_rate) / 1_000_000
     marginal cost = API + overage + cloud/rental + local electricity for every task attempt
     allocated subscription cost = stated optional share of a plan; never pretend it is tokens
-    effective cost = marginal cost + allocated subscription cost + human time
+    effective cash = marginal cost + allocated subscription cost
+    effective cost = effective cash + human_time_value
 
 Retries, child work, review, escalation, and abandoned branches belong to the task tree once only.
 
@@ -32,6 +35,34 @@ Before renewal compare retain, downgrade, remove, upgrade, or replace using actu
     | source URL | verified_at | expires_at | geography/account scope | notes
 
 Official provider documents first; logged-in dashboard second; CLI status for actual quota/reset; community reports only as leads.
+
+## Model economics registry
+
+`benchmark $/task` is observed harness cash, useful for candidate comparison;
+it is not an API rate, plan allowance conversion, or Copilot overage rate. The
+registry must retain all models under consideration even when official direct
+pricing is unavailable. `unknown` blocks a cash claim and triggers a price fetch
+at routing time.
+
+| Model candidate | Access lanes to compare | External observed economics | Direct API rate status |
+|---|---|---|---|
+| GPT-6 Astra | Codex plan; Copilot if offered; API if offered | DeepSWE $4.43/task | unknown: refresh official OpenAI source |
+| GPT-5.6 Sol | Codex plan; Copilot if offered; API if offered | DeepSWE $6.46/task | unknown: refresh official OpenAI source |
+| GPT-5.6 Luna | Codex plan; Copilot if offered; API if offered | DeepSWE $0.61/task | unknown: refresh official OpenAI source |
+| Claude Opus 5 / 5.5 | Claude plan; Copilot; API if offered | Opus 5: DeepSWE $11.84/task | unknown: refresh official Anthropic source |
+| Claude Fable 5.1 | Claude plan; Copilot; API if offered | no comparable task cash captured | unknown |
+| Claude Sonnet 5 | Claude plan; Copilot; API if offered | DeepSWE $26.40/task | unknown |
+| Gemini 3.8 Flash | AGY plan; Google API if offered; Copilot | DeepSWE $2.36/task | unknown: refresh official Google source |
+| Gemini 3.7 Flash | AGY plan; Google API if offered; Copilot | no comparable task cash captured | unknown |
+| DeepSeek V4 Pro | API/local/rental | DeepSWE $1.67/task | published timed rate below |
+| DeepSeek V4.1 Flash | API/local/rental | DeepSWE $0.46/task | published timed rate below |
+| GLM-5.3 / GLM-5.3 Flash | API/local/rental | $3.99 / $0.24 task | unknown |
+| Kimi K3 | API/local/rental | $4.65/task | unknown |
+
+At dispatch, compare `native capacity pressure`, `overage marginal cash`,
+`direct API cash`, and `rental/local all-in cash` for the *same projected
+input/cache/reasoning/output profile*. Never choose a subscription merely
+because its nominal monthly price is less than an arbitrary API budget.
 
 ## Time-of-day API pricing
 
