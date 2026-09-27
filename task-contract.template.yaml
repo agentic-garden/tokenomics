@@ -1,0 +1,39 @@
+# Template only: validate all fields before dispatch.
+task_id: example-short-form-video
+capability: short_form_video_campaign
+mode: discover # discover | prototype | execute
+artifact:
+  type: storyboard_and_reel_package
+  version: draft-1
+inputs:
+  provenance: user_brief
+  sources: []
+data:
+  classification: public
+  allowed_locations: [local, authorized_native_subscription]
+  permitted_fields: []
+  retention: task_scoped
+  disclosure_authority: none
+route:
+  default_tier: 2
+  escalation_tier: 3
+  fallback: park
+skill:
+  required: short_form_video_campaign
+  version: 1
+side_effects:
+  allowed: [read, draft, generate_assets]
+  forbidden: [purchase, account_change, credential_export, publish]
+budget:
+  hard_cash_cap: 0
+  subscription_capacity_share: bounded
+  max_children: 3
+  max_tool_calls: 30
+  deadline: null
+acceptance:
+  checks: [storyboard_approved, render_check, caption_check]
+  owner: content_owner
+  reviewer_triggers: [brand, rights]
+checkpoints:
+  required: [thesis, anti_thesis, assumptions, cheap_test, stop_condition]
+park_on: [missing_authority, missing_data_permission, budget_exceeded]
