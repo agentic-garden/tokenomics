@@ -21,6 +21,51 @@ No hardware purchase is justified before the 4090 has been benchmarked with a
 fully GPU-resident small multilingual model and a suitable runtime. An 11B
 Polish model on a Mac is an accuracy challenger, not the speed baseline.
 
+## Market snapshot: routes that can reach 100+ decode tok/s
+
+These are **external measurements or claims**, not results from the two owned
+machines. They establish which combinations deserve installation and local A/B
+testing. Decode speed is shown only at the source's stated context/engine; it
+must not be extrapolated to a long SRT.
+
+| Host | Model / runtime / condition | Reported decode | Parsing implication | Evidence confidence |
+|---|---|---:|---|---|
+| Owned RTX 4090 24GB | Qwen3 4B, CUDA llama.cpp, TG128, short context | 150.6 tok/s | First fast multilingual-parser candidate; small enough to leave KV headroom | community run, reproducible llama.cpp details |
+| Owned RTX 4090 24GB | Qwen3 8B Q4/Q8, llama.cpp, 4K–16K context | 104–141 tok/s | Main quality/speed candidate; test Swedish, English, Polish and code before promotion | multiple community/synthesis reports; context-sensitive |
+| Owned RTX 4090 24GB | Qwen3 30B-A3B, heterogeneous KTransformers | 49.8 single; 98.8 aggregate 4-way | batch/concurrency experiment, **not** a low-latency single-parser default | primary project benchmark; CPU/RAM offload involved |
+| Owned M1 Max 64GB | Qwen3.6 35B-A3B via experimental Splash Metal port | 144 tok/s | research lead only: reported 38K prompt TTFT is 72s, so unsuitable as a Flash-like long-SRT route until reproduced | single community experimental claim |
+| RTX 5090 32GB | Qwen3.8 27B NVFP4, vLLM, 65K context | 155.2 tok/s | credible upgrade candidate if a larger local multilingual model is actually needed | benchmark-site run; must reproduce |
+| RTX 5090 32GB | Qwen3.6 35B-A3B, vLLM | 437.3 tok/s | highly fast MoE lead; validate model quality, quant, and per-request vs aggregate throughput before believing/buying | single benchmark-site run |
+| RTX PRO 6000 Blackwell 96GB | 14B Q4 at 16K context | 96.9 tok/s | buy for 96GB capacity, long context or concurrency—not to make small parsing magically cheap | external hardware benchmark |
+
+### What this means for the two machines
+
+1. **Do not buy anything to reach 100 tok/s parsing.** The RTX 4090 should do
+   it for an appropriately small 4B–8B model, provided all weights and the
+   working KV cache remain on the GPU.
+2. **Do not use Bielik-11B/Ollama on the M1 as the speed reference.** Its
+   13–27 tok/s observation is in the expected dense 11B/unified-memory class.
+   On the Mac, test an MLX/Metal runtime and a small model for a compact batch
+   lane; treat the 144 tok/s MoE/Splash claim as an experiment, not a purchase
+   basis.
+3. **For Polish:** benchmark Bielik 7B before Bielik 11B on the 4090. If its
+   precision does not beat the 4B/8B multilingual winner enough to justify the
+   slower E2E route, retain it only as a Polish escalation model.
+4. **For raw parsing speed:** a 0.6B–4B local model or deterministic parser
+   may be faster, but it is not promoted until the eight-category false-positive
+   and line-citation evaluation proves it is usable.
+
+The immediate candidate order is therefore:
+
+```text
+4090 + Qwen3 4B       -> speed floor / language-screening challenger
+4090 + Qwen3 8B       -> expected primary local semantic parser
+4090 + Bielik 7B      -> Polish precision challenger
+M1 + small MLX model  -> portable/background batch challenger
+M1 + Splash MoE       -> experimental research lane only
+5090 + 27B/35B MoE    -> buy only if the 4090 fails the quality/context target
+```
+
 ## Canonical parsing task
 
 ### Contract
@@ -245,6 +290,11 @@ Crowdsourced leaderboards identify candidates; they do not promote a route.
 | Local AI Arena | cross-hardware candidate discovery with prefill/decode separation | https://localaiarena.com/ |
 | ComputeArena | community run discovery by model, hardware, runtime and context | https://computearena.ai/leaderboard |
 | MLX inference bench | Apple-runtime challenger methodology | https://github.com/odysa/mlx-inference-bench |
+| M1 Max bytes-per-token study | directly relevant 64GB M1 Max measurements and bandwidth method | https://github.com/rajeeja/local-llm-bench-m1max |
+| M1 Max Splash claim | experimental 35B-A3B 144 tok/s lead; inspect full context/TTFT before use | https://www.reddit.com/r/LocalLLM/comments/1wqngu9/splash_on_m1_part_2_35ba3b_at_144_tok_s_on_a_2021/ |
+| RTX 4090 Qwen measurements | 4B/8B candidate figures; community synthesis, not a purchase guarantee | https://markaicode.com/benchmarks/ollama-qwen-3-rtx-4090-latency-benchmark/ |
+| RTX 5090 comparison | 32GB candidate runs with context, TTFT, memory and runtime displayed | https://llm-bench.io/hardware/rtx-5090 |
+| RTX PRO 6000 context scaling | 96GB long-context/prefill/decode evidence; treat price claims as volatile | https://www.hardware-corner.net/gpu-llm-benchmarks/rtx-pro-6000-blackwell/ |
 | Bielik model card | exact Polish baseline version/license/model details | https://huggingface.co/speakleash/Bielik-11B-v3.0-Instruct |
 | NVIDIA/AMD product pages | VRAM, power, bandwidth and platform prerequisites | https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5090/ ; https://www.amd.com/en/products/graphics/workstations/radeon-ai-pro/ai-9000-series/amd-radeon-ai-pro-r9700.html ; https://www.nvidia.com/en-us/products/workstations/professional-desktop-gpus/rtx-pro-6000-family/ |
 
@@ -262,4 +312,3 @@ retain   still passing a current local regression run
 demote   regression, deadline failure, or invalid-citation failure
 retire   unavailable, unsupported, obsolete, or no longer economical
 ```
-
