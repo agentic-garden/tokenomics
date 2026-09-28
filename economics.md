@@ -64,17 +64,61 @@ At dispatch, compare `native capacity pressure`, `overage marginal cash`,
 input/cache/reasoning/output profile*. Never choose a subscription merely
 because its nominal monthly price is less than an arbitrary API budget.
 
-## Reasoning-level identity
+## Reasoning effort: published billing facts
 
-Do not create a separately priced model for every `low|medium|high|xhigh|max|
-ultra` UI selection. Create a distinct economic route only when measurements
-prove it has a different direct-cash, overage-credit, or plan-quota multiplier.
-Selections with a verified equal multiplier are aliases of one route; unknown
-selections stay unresolved and cannot inherit another tier's cost.
+Do **not** turn every reasoning label into a different price-card model. The
+providers below publish the same unit token rate across their selectable
+efforts; the total task cost changes because higher effort can generate more
+reasoning tokens. There is no published universal multiplier such as `Max =
+2× Medium`, so a routing calculation must estimate token use from a comparable
+task, not multiply a price card by an invented factor.
 
-The full current inventory and the exact multiplier experiment are in
-[`effort-economics.md`](effort-economics.md). Load it before selecting an
-effort for a cost-sensitive task.
+| Provider/model family | Selectable reasoning levels | Published unit-price distinction by level? | Cost rule used by Tokenomics |
+|---|---|---|---|
+| OpenAI GPT-6 Astra | API: low, medium, high, xhigh, max. Codex may additionally expose `ultra`; it is not an API rate tier in the cited model card. | **No.** Reasoning tokens are billed as output tokens at the model's output rate. | One API price-card model; record effort in the task record because higher effort can use more output-billed reasoning tokens. Do not assign a separate API multiplier to Codex `ultra`. |
+| OpenAI GPT-6 Sol / Luna | none, low, medium, high, xhigh, max where supported by the client | **No.** Same selected-model token rates. | One API price-card model per base model; `none` is a valid lower-token lane where it meets the quality floor. |
+| OpenAI GPT-5.6 family | effort plus `standard` / `pro` reasoning mode | **No fixed rate multiplier.** Pro performs more model work and bills those tokens at the selected model's normal rates. | Keep `standard` and `pro` as separate dispatch modes because Pro is explicitly higher usage/latency; do not assign a fake multiplier. |
+| Anthropic Claude 5 / 5.5 | effort varies by model; Claude Code/apps default Medium while Platform defaults High for current Claude 5 family | **No.** Per-token rates are model-level; Anthropic states lower effort uses fewer tokens and higher effort reasons longer. | One API price-card model per base model; effort is a task-consumption variable, not a second rate card. |
+| Gemini 3.8 / 3.7 Flash | low, medium, high | **No.** Thinking tokens are included in output-token billing at the same selected service-tier rate. | One API price-card model per base model/service tier; track output+thinking total, not visible-answer length alone. |
+| DeepSeek V4 / V4.1 and Kimi K3 | provider-specific modes, if exposed by a client | No official fixed effort multiplier captured. | Use the provider model price card; do not claim a per-effort multiplier until the provider publishes one. |
+
+**Subscription and Copilot exception:** neither a consumer plan nor Copilot's
+credit UI publishes a reliable per-effort token/credit formula for these
+models. Their hidden weighted capacity must be measured from actual capacity
+deltas; it must never be converted from an API reasoning-token bill.
+
+Sources, verified 2026-09-29: [OpenAI reasoning](https://developers.openai.com/api/docs/guides/reasoning),
+[GPT-6 Astra model card](https://developers.openai.com/api/docs/models/gpt-6-astra),
+[Anthropic Sonnet 5.5](https://www.anthropic.com/claude-sonnet-5-5), and
+[Gemini 3.8 Flash pricing](https://ai.google.dev/gemini-api/docs/pricing).
+
+## Context is a separate economic variant
+
+Context capacity and context **billing** are separate. Keep a long-context
+route separate only where the provider actually changes the bill; otherwise it
+is a capacity/latency constraint, not a second model price.
+
+| Base model / lane | Context / maximum output | Published context-cost split | Economic routing identity |
+|---|---:|---|---|
+| GPT-6 Astra, Sol, Luna API | 1,050K / model-specific max output (Astra 128K) | Input over **272K**: 2× input and cache rates plus 1.5× output for the entire request | `short≤272K` and `long>272K` are separate price variants. |
+| Gemini 3.8 Flash API | 1M / 64K | No long-context price bracket published; all output includes thinking tokens | One price variant; minimize context for latency/retry reasons, not a fictional surcharge. |
+| Gemini 3.7 Flash API | 1M class | No long-context price bracket published | One price variant. |
+| Claude 5 family API | 1M / 128K where offered | Current Claude 5 material cited here publishes model token rates, not a new Claude-5 long-context surcharge. Do **not** copy the retired Sonnet 4 >200K rate into Claude 5. | One price variant until a current model-specific rate card says otherwise. |
+| DeepSeek V4.1 Flash API | 1M | No context-length price bracket in the current pricing/model documentation captured here | One price variant. |
+| Kimi K3 API | provider documentation currently reports up to 256K | Official Kimi help says billing is not segmented by context length | One price variant. |
+
+OpenAI's long-context threshold applies to the full request, including cache
+reads/writes—not merely the new user message. Service processing tiers are
+additional independent variants: OpenAI Batch/Flex are 50% of Standard and
+Fast is 2×; Gemini Batch/Flex are 50% of Standard and Priority is 1.8×. Do not
+confuse these with reasoning effort.
+
+Sources, verified 2026-09-29: [OpenAI pricing](https://developers.openai.com/api/docs/pricing),
+[GPT-6 Luna context pricing](https://developers.openai.com/api/docs/models/gpt-6-luna),
+[Gemini 3.8 model guide](https://ai.google.dev/gemini-api/docs/latest-model),
+[Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing),
+[Claude current-model guidance](https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/prompt-templates-and-variables),
+and [Kimi billing](https://www.kimi.com/help/kimi-api/api-pricing).
 
 ## Time-of-day API pricing
 

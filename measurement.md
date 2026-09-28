@@ -9,8 +9,7 @@ Load only for route evaluation or subscription portfolio decisions.
     quality_floor, cash_cap, deadline, start/end, queue/rate-limit idle,
     generation/tool/review/human seconds, context/cache state, capacity before/after,
     input/cache-hit/cache-write/reasoning/output/tool tokens when exposed,
-    baseline_effort, direct_invoice_cash, overage_credits_delta,
-    subscription_capacity_delta, effort_multiplier_status,
+    direct_invoice_cash, overage_credits_delta, subscription_capacity_delta,
     api/overage/rental/local/tool/review cash, human minutes, retry/escalation count,
     acceptance, defect escape, owner/reviewer
 
@@ -29,14 +28,13 @@ Keep a route only if it meets the quality floor and wins its declared objective 
 
 ## Reasoning-level measurements
 
-An effort label such as `max` or `ultra` is not a token/cost multiplier by
-definition. For an effort comparison, hold model, access lane, fixture, prompt,
-tools, context state and verifier constant. Capture direct invoice cash,
-overage credits or subscription capacity before/after, plus all exposed token
-categories. Use three warm repetitions, calculate median/range versus the
-baseline effort, and classify `same`, `different`, or `uncertain` according to
-[`effort-economics.md`](effort-economics.md). Never deduce quota pricing from a
-single task's output tokens.
+Effort normally changes actual reasoning/output-token use rather than its
+published unit rate. For an effort comparison, hold model, access lane, fixture,
+prompt, tools, context state and verifier constant. Capture all exposed token
+categories, direct invoice cash, and any overage/subscription capacity delta.
+Use three warm repetitions and report median/range; never deduce a fixed
+subscription-credit multiplier from one task. The current provider facts and
+context-tier rules are in `economics.md`.
 
 ## Monthly benchmark decision record
 
