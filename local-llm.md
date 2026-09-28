@@ -105,6 +105,35 @@ Sources: [official Ollama v3 variants](https://ollama.com/qooba/bielik-11b-v3.0-
 [Apple speculative-decoding study](https://arxiv.org/abs/2604.16368), and
 [older 24GB fit inventory](https://www.reddit.com/r/LocalLLaMA/comments/1gai2ol/list_of_models_to_use_on_single_3090_or_4090/).
 
+### Cloud comparison: Gemini 3.8 Flash High
+
+External Artificial Analysis reporting puts Gemini 3.8 Flash High at roughly
+300–305 output tok/s. Against the observed 4090 Bielik rate:
+
+| Output-only measure | Bielik-11B on owned 4090 | Gemini 3.8 Flash High | Difference |
+|---|---:|---:|---:|
+| sustained output decode | 96.15 tok/s | ~300–305 tok/s | Flash ~3.1× faster |
+| 100-token JSON result, decode only | ~1.04s | ~0.33s | ~0.71s |
+| 500-token result, decode only | ~5.20s | ~1.65–1.67s | ~3.5s |
+
+This is **not** an end-to-end conclusion. The published Flash output-speed
+figure is a cloud benchmark, while the local record lacks Bielik prefill and
+TTFT; cloud queue/network/effort and local prompt processing can dominate a
+small structured response. For SRT classification, choose by measured p95:
+
+```text
+SRT total = deterministic preprocessing + prefill/TTFT + small JSON decode + validation
+```
+
+The local 4090 route is therefore viable when it meets the precision floor and
+its measured p95 total is acceptable, especially for batch/offline work or to
+avoid plan/API capacity. Gemini Flash remains the speed-first fallback for
+urgent work or local queue saturation. Capture the next Bielik
+`prompt eval time`/TTFT line before claiming either route wins long transcripts.
+
+Source: [Artificial Analysis Gemini 3.8 Flash release analysis](https://artificialanalysis.ai/articles/gemini-3-8-flash)
+(reported figures must be refreshed monthly).
+
 ## Canonical parsing task
 
 ### Contract
