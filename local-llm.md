@@ -81,16 +81,20 @@ KV cache.
 | Apple Silicon / MLX-LM with cross-family speculative decoding | Bielik-11B target + Bielik 1.5B, Qwen2.5-1.5B, or Llama3.2-1B draft | no absolute t/s published in the paper abstract | structured Polish text reached up to 1.7x speedup; varied instructions failed to benefit consistently |
 | NVIDIA GB10 / vLLM | Bielik-11B-v3 NVFP4 | 33.7 tok/s target only; 73–78 tok/s with DFlash speculative decode | single-stream, temp=0, 32K server configuration; useful NVFP4 proof, not a 4090/5090 result |
 | RTX 3090/4090 24GB / llama.cpp | Bielik-11B-v2.3 Q8_0 | unknown | an older community inventory shows it fits with 20K configured context; no throughput was reported |
-| RTX 4090 / 5090 / RTX PRO 6000 | Bielik-11B-v3 | **unknown** | no credible published measurement found in this research pass |
+| **Owned RTX 4090 24GB / llama.cpp server** | **Bielik-11B; 32K configured context; exact quant/version unknown** | **96.15 tok/s aggregate over 1,734 output tokens; rolling 95.13–97.18** | **first-party local observation on 2026-09-28; prefill, TTFT, actual resident context, power and model hash still unknown** |
+| RTX 5090 / RTX PRO 6000 | Bielik-11B-v3 | **unknown** | no credible published measurement found in this research pass |
 
 ### Bielik decision
 
 ```text
-Bielik-11B is not currently a 100+ tok/s proven route on any relevant machine.
-It is a Polish-quality challenger, not the fast-parser default.
+Bielik-11B is now a proven approximately-100 tok/s decoder on the owned RTX
+4090 for a sustained 1,734-token generation. It remains a Polish-quality
+challenger until the eight-category fixture proves its precision and E2E parser
+throughput against Qwen candidates.
 
-For speed on 4090: benchmark Bielik 7B first, then Bielik 11B only if its
-eight-category Polish precision materially improves on the faster 4B/8B route.
+For speed on 4090: use this 11B result as the quality baseline; benchmark
+Bielik 7B only if it delivers materially higher parsing E2E throughput without
+losing the configured Polish precision floor.
 
 For M1: do not assume speculative decoding will make it Flash-like. The only
 published Apple result is a content-dependent multiplier, not an absolute speed.
