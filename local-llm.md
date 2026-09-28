@@ -66,6 +66,41 @@ M1 + Splash MoE       -> experimental research lane only
 5090 + 27B/35B MoE    -> buy only if the 4090 fails the quality/context target
 ```
 
+## Bielik-11B: machine evidence, not extrapolation
+
+The relevant model is Bielik-11B-v3.0-Instruct. Do not silently substitute a
+v2/v2.3 figure: v2 is Mistral-derived and several older community posts concern
+memory fit rather than performance. The official Ollama variants show that v3
+Q4_K_M is 6.7GB and Q8_0 is 12GB with a 32K advertised context, so either can
+fit in a 24GB 4090 in principle; the remaining VRAM is needed for runtime and
+KV cache.
+
+| Machine / runtime | Exact Bielik configuration | Decode evidence | What is actually known |
+|---|---|---:|---|
+| Owned M1 Max 64GB / Ollama | user-reported Bielik-11B | 13–27 tok/s | real local observation; quant, context and cold/warm state still need recording |
+| Apple Silicon / MLX-LM with cross-family speculative decoding | Bielik-11B target + Bielik 1.5B, Qwen2.5-1.5B, or Llama3.2-1B draft | no absolute t/s published in the paper abstract | structured Polish text reached up to 1.7x speedup; varied instructions failed to benefit consistently |
+| NVIDIA GB10 / vLLM | Bielik-11B-v3 NVFP4 | 33.7 tok/s target only; 73–78 tok/s with DFlash speculative decode | single-stream, temp=0, 32K server configuration; useful NVFP4 proof, not a 4090/5090 result |
+| RTX 3090/4090 24GB / llama.cpp | Bielik-11B-v2.3 Q8_0 | unknown | an older community inventory shows it fits with 20K configured context; no throughput was reported |
+| RTX 4090 / 5090 / RTX PRO 6000 | Bielik-11B-v3 | **unknown** | no credible published measurement found in this research pass |
+
+### Bielik decision
+
+```text
+Bielik-11B is not currently a 100+ tok/s proven route on any relevant machine.
+It is a Polish-quality challenger, not the fast-parser default.
+
+For speed on 4090: benchmark Bielik 7B first, then Bielik 11B only if its
+eight-category Polish precision materially improves on the faster 4B/8B route.
+
+For M1: do not assume speculative decoding will make it Flash-like. The only
+published Apple result is a content-dependent multiplier, not an absolute speed.
+```
+
+Sources: [official Ollama v3 variants](https://ollama.com/qooba/bielik-11b-v3.0-instruct),
+[GB10 NVFP4/DFlash measurement](https://huggingface.co/norecyc/Bielik-11B-v3.0-Instruct-NVFP4/commit/77dc7656fc66837481d1f6d66d1c0d76ae7f2d9b),
+[Apple speculative-decoding study](https://arxiv.org/abs/2604.16368), and
+[older 24GB fit inventory](https://www.reddit.com/r/LocalLLaMA/comments/1gai2ol/list_of_models_to_use_on_single_3090_or_4090/).
+
 ## Canonical parsing task
 
 ### Contract
