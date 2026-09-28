@@ -9,6 +9,8 @@ Load only for route evaluation or subscription portfolio decisions.
     quality_floor, cash_cap, deadline, start/end, queue/rate-limit idle,
     generation/tool/review/human seconds, context/cache state, capacity before/after,
     input/cache-hit/cache-write/reasoning/output/tool tokens when exposed,
+    baseline_effort, direct_invoice_cash, overage_credits_delta,
+    subscription_capacity_delta, effort_multiplier_status,
     api/overage/rental/local/tool/review cash, human minutes, retry/escalation count,
     acceptance, defect escape, owner/reviewer
 
@@ -24,6 +26,17 @@ Compare economy and quality-first routes on the same task class, inputs, rubric,
 Before testing declare the quality floor, primary objective, minimum meaningful improvement, maximum test spend, and sample-extension rule. Preserve original attempts when changing prompts/rubrics and rerun both arms.
 
 Keep a route only if it meets the quality floor and wins its declared objective without unacceptable regression elsewhere. Re-evaluate after material price, model, workload, codebase, or quality change.
+
+## Reasoning-level measurements
+
+An effort label such as `max` or `ultra` is not a token/cost multiplier by
+definition. For an effort comparison, hold model, access lane, fixture, prompt,
+tools, context state and verifier constant. Capture direct invoice cash,
+overage credits or subscription capacity before/after, plus all exposed token
+categories. Use three warm repetitions, calculate median/range versus the
+baseline effort, and classify `same`, `different`, or `uncertain` according to
+[`effort-economics.md`](effort-economics.md). Never deduce quota pricing from a
+single task's output tokens.
 
 ## Monthly benchmark decision record
 

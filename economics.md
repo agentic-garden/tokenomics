@@ -64,6 +64,18 @@ At dispatch, compare `native capacity pressure`, `overage marginal cash`,
 input/cache/reasoning/output profile*. Never choose a subscription merely
 because its nominal monthly price is less than an arbitrary API budget.
 
+## Reasoning-level identity
+
+Do not create a separately priced model for every `low|medium|high|xhigh|max|
+ultra` UI selection. Create a distinct economic route only when measurements
+prove it has a different direct-cash, overage-credit, or plan-quota multiplier.
+Selections with a verified equal multiplier are aliases of one route; unknown
+selections stay unresolved and cannot inherit another tier's cost.
+
+The full current inventory and the exact multiplier experiment are in
+[`effort-economics.md`](effort-economics.md). Load it before selecting an
+effort for a cost-sensitive task.
+
 ## Time-of-day API pricing
 
 **Peak/off-peak** means the provider charges different API rates according to the
