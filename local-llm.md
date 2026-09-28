@@ -21,6 +21,40 @@ No hardware purchase is justified before the 4090 has been benchmarked with a
 fully GPU-resident small multilingual model and a suitable runtime. An 11B
 Polish model on a Mac is an accuracy challenger, not the speed baseline.
 
+## Dedicated AI desktops and minis: the missing comparison
+
+This table compares the machines that are actually sold for local AI work. It
+does **not** turn a vendor's NPU TOPS number or memory capacity into an LLM
+throughput claim. `TG` is one-stream decode; `PP` is prompt/prefill throughput.
+Those phases answer different routing questions.
+
+| System | Memory / practical advantage | Comparable measured evidence | Decision for this fleet |
+|---|---|---|---|
+| **Owned RTX 4090 PC** | 24 GB VRAM; conventional CUDA stack; already owned | Bielik-11B at 32K: **96.15 TG tok/s** sustained (owned measurement) | **Keep as primary small-model parser.** It is already near the 100 TG target and is the no-purchase baseline. |
+| **NVIDIA DGX Spark (GB10)** | 128 GB coherent LPDDR5X; NVIDIA states support for up-to-200B-parameter local models | Official `llama.cpp` DGX benchmark: Qwen2.5-Coder 7B Q8 at 4K: **~28.6 TG / 2,100 PP tok/s**; Qwen3 30B-A3B Q8 at 4K: **~54.8 TG / 2,633 PP tok/s**. A separate Bielik NVFP4/DFlash run reported 73–78 TG. | Buy for **large-model fit, experimentation and concurrent serving**, not to accelerate this 8–11B parser. Its much larger RAM does not beat the owned 4090's observed Bielik decode result. |
+| **AMD Ryzen AI Max+ 395 / Strix Halo 128 GB mini** (for example GMKtec EVO-X2 / Framework Desktop class) | 128 GB unified memory makes 27B–70B+ local models and long KV possible in a compact box | Reproducible EVO-X2, Qwen3.8 27B Q5, Vulkan, 128K: **16.45 TG / 31.44 PP tok/s**, 3.06s TTFT. Claims of 50–60+ TG for smaller MoEs exist but are runtime/quant/context-dependent and are not a purchase-grade comparison. | A **capacity-per-krona and quiet always-on lab box**, not a single-stream speed upgrade. Do not buy for log/SRT parsing while the 4090 is available. |
+| **Mac mini M4 Pro** (24–64 GB) | compact, quiet, power-efficient; unified memory fits models that exceed 24 GB VRAM at low quant | Independent M4 Pro figures put Qwen3 8B around **19.4 TG tok/s**; a 27B run reports ~21 TG. No trustworthy Bielik-11B apples-to-apples result found. | **Do not buy for speed.** It is an additional low-power endpoint or Apple development machine; it does not replace the existing 4090 parser or improve the owned M1 Max enough to justify a purchase. |
+| **Mac Studio (M4 Max / Ultra, 96–512 GB)** | highest Apple unified-memory capacity/bandwidth; large private context, large MoE/dense models, low-noise always-on service | Cross-platform testing reports Apple Studio decode ahead of GB10 and Strix Halo for its tested 35B-A3B / 12B / 120B models; published M3 Ultra examples show large-model decode in roughly the 20–60 TG class depending on model/context/runtime. | Consider only for **large local models or very large private context** where a 24 GB GPU cannot fit the task. It is not the economical route to Flash-like parser speed. |
+| **RTX 5090 32 GB workstation** | +8 GB VRAM vs 4090; strongest conventional single-GPU CUDA upgrade | External Qwen3.8 27B NVFP4/vLLM at 65K: **155.2 TG tok/s**; exact Bielik result unknown. | The only plausible single-GPU upgrade if the 4090 fails a demonstrated quality/context requirement. Require a local rental/borrowed benchmark first. |
+| **RTX PRO 6000 Blackwell 96 GB workstation** | 96 GB ECC VRAM; workstation deployment / large models / multi-user concurrency | External 14B Q4 at 16K: **96.9 TG tok/s**. | Purchase only for **96 GB capacity, reliability or concurrency**, never merely to make a small parser faster. |
+
+### Consequence: capacity and speed are separate purchases
+
+```text
+Need a fast 4B–11B parser?       existing RTX 4090 first.
+Need a 27B–120B private model?   DGX Spark / Strix Halo / Mac Studio compare by fit,
+                                  PP, sustained TG, power and software reliability.
+Need 100+ TG from a larger model? test or rent RTX 5090-class CUDA first.
+Need Flash-like cloud latency?    local hardware has no credible general replacement;
+                                  route urgent work to Flash and batch/private work local.
+```
+
+The DGX Spark and Strix Halo are attractive precisely because 128 GB lets a
+single host retain weights and a large KV cache. That does not make either a
+better *one-request decoder* than a 4090. Likewise, a Mac mini is useful for
+silent, low-power availability—not as a speed purchase when an M1 Max and 4090
+are already owned.
+
 ## Market snapshot: routes that can reach 100+ decode tok/s
 
 These are **external measurements or claims**, not results from the two owned
@@ -359,6 +393,11 @@ Crowdsourced leaderboards identify candidates; they do not promote a route.
 | ComputeArena | community run discovery by model, hardware, runtime and context | https://computearena.ai/leaderboard |
 | MLX inference bench | Apple-runtime challenger methodology | https://github.com/odysa/mlx-inference-bench |
 | M1 Max bytes-per-token study | directly relevant 64GB M1 Max measurements and bandwidth method | https://github.com/rajeeja/local-llm-bench-m1max |
+| NVIDIA DGX Spark specification | 128GB unified-memory capacity and official product positioning | https://www.nvidia.com/en-au/products/workstations/dgx-spark/ |
+| llama.cpp DGX Spark benchmarks | reproducible PP/TG figures by model and context | https://github.com/ggml-org/llama.cpp/blob/master/benches/dgx-spark/dgx-spark.md |
+| Ryzen AI Max+ 395 128GB run | reproducible 27B, 64K/128K Vulkan PP/TG/TTFT reference | https://github.com/erstmalreden/qwen3.8-27b-ryzen-ai-max-395-benchmarks |
+| Mac mini M4 Pro run | independent small-system candidate discovery; verify model and context before use | https://www.reddit.com/r/ollama/comments/1tqsz66/benchmarked_qwen_3_8b_llama_31_8b_qwen_25_7b_vs/ |
+| Mac Studio comparison | cross-platform decode/prefill comparison for 35B-A3B, 12B and 120B models | https://www.tomshardware.com/desktops/exploring-apple-silicons-local-ai-performance-with-the-mac-studio-and-m4-max-m4-max-beats-gb10-and-strix-halo-in-decode-throughput-but-memory-bandwidth-isnt-everything |
 | M1 Max Splash claim | experimental 35B-A3B 144 tok/s lead; inspect full context/TTFT before use | https://www.reddit.com/r/LocalLLM/comments/1wqngu9/splash_on_m1_part_2_35ba3b_at_144_tok_s_on_a_2021/ |
 | RTX 4090 Qwen measurements | 4B/8B candidate figures; community synthesis, not a purchase guarantee | https://markaicode.com/benchmarks/ollama-qwen-3-rtx-4090-latency-benchmark/ |
 | RTX 5090 comparison | 32GB candidate runs with context, TTFT, memory and runtime displayed | https://llm-bench.io/hardware/rtx-5090 |
