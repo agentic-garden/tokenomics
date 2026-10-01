@@ -26,6 +26,7 @@ Load this file first; load no other Tokenomics module unless its trigger below a
 | Check quota, rate limit, context, local memory | capacity.md |
 | Map a team/agent/skill to a capability/artifact | capabilities.md |
 | Measure routes, renew/cancel a plan | measurement.md |
+| Monitor native CLI work, enforce authority profiles, or record agent activity | monitoring.md |
 | Re-rank models using quality, tokens, cost, and time | benchmarking.md |
 | Select benchmark evidence for a department or project artifact | benchmarks/README.md |
 | Produce a dispatch contract | task-contract.template.yaml |
